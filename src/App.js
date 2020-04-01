@@ -20,9 +20,33 @@ const useResource = (baseUrl) => {
   const [resources, setResources] = useState([])
 
   // ...
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(baseUrl)
+        console.log(response.status)
+        if(response.status === 200) {
+          setResources(response.data)
+        }
+      } catch (error) {
+        throw error
+      }
+    }
+    fetchData()
+  },[baseUrl])
 
-  const create = (resource) => {
+  const create = async (resource) => {
     // ...
+    try{
+      const response = await axios.post(baseUrl, resource)
+      const newResources = resources.concat(response.data)
+      console.log(newResources)
+      setResources(newResources)
+      return response
+    } catch (error) {
+      console.log(error)
+    }
+    
   }
 
   const service = {
@@ -39,8 +63,8 @@ const App = () => {
   const name = useField('text')
   const number = useField('text')
 
-  const [notes, noteService] = useResource('http://localhost:3005/notes')
-  const [persons, personService] = useResource('http://localhost:3005/persons')
+  const [notes, noteService] = useResource('http://localhost:3005/api/notes')
+  const [persons, personService] = useResource('http://localhost:3005/api/persons')
 
   const handleNoteSubmit = (event) => {
     event.preventDefault()
